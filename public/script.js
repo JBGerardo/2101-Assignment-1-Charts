@@ -32,6 +32,7 @@ function generateInputs() {
         valueInput.id = `sector${i}`;
         valueInput.placeholder = `Enter value for Sector ${i}`;
         valueInput.min = "0";
+        valueInput.oninput = checkTotalValue; // Add event listener to check total value dynamically
 
         // Append elements to the container
         sectorInputs.appendChild(nameLabel);
@@ -40,7 +41,11 @@ function generateInputs() {
         sectorInputs.appendChild(valueInput);
     }
 
-    // Add input for user-defined "Others" category
+    // Create div for "Others" input, initially hidden
+    let othersContainer = document.createElement("div");
+    othersContainer.id = "othersContainer";
+    othersContainer.style.display = "none";
+
     let othersLabel = document.createElement("label");
     othersLabel.textContent = "Name for Remaining Category:";
     othersLabel.setAttribute("for", "othersName");
@@ -50,8 +55,26 @@ function generateInputs() {
     othersInput.id = "othersName";
     othersInput.placeholder = "Enter name for remaining category";
 
-    sectorInputs.appendChild(othersLabel);
-    sectorInputs.appendChild(othersInput);
+    othersContainer.appendChild(othersLabel);
+    othersContainer.appendChild(othersInput);
+    sectorInputs.appendChild(othersContainer);
+}
+
+// Function to check total value and show/hide "Others" field
+function checkTotalValue() {
+    let numSectors = document.getElementById("numSectors").value;
+    let totalValue = 0;
+    
+    for (let i = 1; i <= numSectors; i++) {
+        totalValue += parseFloat(document.getElementById(`sector${i}`).value) || 0;
+    }
+
+    let othersContainer = document.getElementById("othersContainer");
+    if (totalValue >= 100) {
+        othersContainer.style.display = "none"; // Hide if total is 100 or more
+    } else {
+        othersContainer.style.display = "block"; // Show if total is less than 100
+    }
 }
 
 // Function to generate the chart
@@ -64,7 +87,7 @@ function drawChart() {
     let chartTitle = document.getElementById("chartTitle").value || "Generated Chart";
     let chartType = document.getElementById("chartType").value;
     let numSectors = document.getElementById("numSectors").value;
-    let othersName = document.getElementById("othersName").value || "Others";  // Default name for remaining sector
+    let othersContainer = document.getElementById("othersContainer");
 
     let data = [["Sector", "Value"]];
     let totalValue = 0;
@@ -88,8 +111,9 @@ function drawChart() {
             return;
         }
 
-        // Add user-defined "Others" category if total is less than 100
-        if (totalValue < 100) {
+        // If total value is less than 100, add user-defined "Others" category
+        if (totalValue < 100 && othersContainer.style.display !== "none") {
+            let othersName = document.getElementById("othersName").value || "Others"; // Default name
             let remaining = 100 - totalValue;
             data.push([othersName, remaining]);
         }
@@ -117,3 +141,4 @@ function drawChart() {
         chart.draw(google.visualization.arrayToDataTable(data), options);
     }
 }
+
