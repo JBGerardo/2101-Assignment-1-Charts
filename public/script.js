@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     google.charts.load("current", { packages: ["corechart"] });
 });
 
-// Function to generate input fields based on the selected number of sectors
 function generateInputs() {
     let numSectors = document.getElementById("numSectors").value;
     let sectorInputs = document.getElementById("sectorInputs");
@@ -40,6 +39,19 @@ function generateInputs() {
         sectorInputs.appendChild(valueLabel);
         sectorInputs.appendChild(valueInput);
     }
+
+    // Add input for user-defined "Others" category
+    let othersLabel = document.createElement("label");
+    othersLabel.textContent = "Name for Remaining Category:";
+    othersLabel.setAttribute("for", "othersName");
+
+    let othersInput = document.createElement("input");
+    othersInput.type = "text";
+    othersInput.id = "othersName";
+    othersInput.placeholder = "Enter name for remaining category";
+
+    sectorInputs.appendChild(othersLabel);
+    sectorInputs.appendChild(othersInput);
 }
 
 // Function to generate the chart
@@ -52,19 +64,20 @@ function drawChart() {
     let chartTitle = document.getElementById("chartTitle").value || "Generated Chart";
     let chartType = document.getElementById("chartType").value;
     let numSectors = document.getElementById("numSectors").value;
-    
+    let othersName = document.getElementById("othersName").value || "Others";  // Default name for remaining sector
+
     let data = [["Sector", "Value"]];
     let totalValue = 0;
-    
+
     for (let i = 1; i <= numSectors; i++) {
         let sectorName = document.getElementById(`sectorName${i}`).value || `Sector ${i}`;
         let sectorValue = parseFloat(document.getElementById(`sector${i}`).value) || 0;
-        
+
         if (sectorValue < 0) {
             alert("Values for sectors must be non-negative.");
             return;
         }
-        
+
         totalValue += sectorValue;
         data.push([sectorName, sectorValue]);
     }
@@ -75,10 +88,10 @@ function drawChart() {
             return;
         }
 
-        // Add remaining "Others" sector if total is less than 100
+        // Add user-defined "Others" category if total is less than 100
         if (totalValue < 100) {
             let remaining = 100 - totalValue;
-            data.push(["Others", remaining]);
+            data.push([othersName, remaining]);
         }
 
         let options = {
