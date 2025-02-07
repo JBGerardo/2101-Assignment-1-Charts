@@ -1,45 +1,89 @@
 document.addEventListener("DOMContentLoaded", () => {
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load("current", { packages: ["corechart"] });
 });
+
+// Function to generate input fields based on the selected number of sectors
+function generateInputs() {
+    let numSectors = document.getElementById("numSectors").value;
+    let sectorInputs = document.getElementById("sectorInputs");
+
+    // Clear previous inputs
+    sectorInputs.innerHTML = "";
+
+    for (let i = 1; i <= numSectors; i++) {
+        let label = document.createElement("label");
+        label.textContent = `Sector ${i}:`;
+        label.setAttribute("for", `sector${i}`);
+
+        let input = document.createElement("input");
+        input.type = "number";
+        input.id = `sector${i}`;
+        input.placeholder = `Enter value for Sector ${i}`;
+        input.min = "0";
+
+        sectorInputs.appendChild(label);
+        sectorInputs.appendChild(input);
+    }
+}
+
+// Function to generate the chart
 function generateChart() {
     google.charts.setOnLoadCallback(drawChart);
 }
+
+// Function to draw the chart
 function drawChart() {
-    let chartTitle = document.getElementById("chartTitle").value;
-    let sector1 = parseFloat(document.getElementById("sector1").value) || 0;
-    let sector2 = parseFloat(document.getElementById("sector2").value) || 0;
+    let chartTitle = document.getElementById("chartTitle").value || "Generated Chart";
     let chartType = document.getElementById("chartType").value;
+    let numSectors = document.getElementById("numSectors").value;
     
-    if (chartType === "pie") {
-        if (sector1 < 0 || sector2 < 0) {
+    let data = [["Category", "Value"]];
+    let totalValue = 0;
+    
+    for (let i = 1; i <= numSectors; i++) {
+        let sectorValue = parseFloat(document.getElementById(`sector${i}`).value) || 0;
+        
+        if (sectorValue < 0) {
             alert("Values for sectors must be non-negative.");
             return;
         }
-        let total = sector1 + sector2;
-        if (total > 100) {
+        
+        totalValue += sectorValue;
+        data.push([`Sector ${i}`, sectorValue]);
+    }
+
+    if (chartType === "pie") {
+        if (totalValue > 100) {
             alert("The total value of all sectors cannot exceed 100%.");
             return;
         }
-        let data = [['Category', 'Value']];
-        if (sector1 > 0) data.push([`Sector 1 (${sector1}%)`, sector1]);
-        if (sector2 > 0) data.push([`Sector 2 (${sector2}%)`, sector2]);
-        if (total < 100) {
-            let others = 100 - total;
-            data.push([`Others (${others}%)`, others]);
+
+        // Add remaining "Others" sector if total is less than 100
+        if (totalValue < 100) {
+            let remaining = 100 - totalValue;
+            data.push([`Others (${remaining}%)`, remaining]);
         }
-        
-        var options = { title: chartTitle };
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+
+        let options = {
+            title: chartTitle,
+            width: 500,
+            height: 400,
+            pieHole: 0.3, // Optional: for a donut chart effect
+        };
+
+        let chart = new google.visualization.PieChart(document.getElementById("chart_div"));
         chart.draw(google.visualization.arrayToDataTable(data), options);
     } else {
-        var data = google.visualization.arrayToDataTable([
-            ['Category', 'Value'],
-            ['Sector 1', sector1],
-            ['Sector 2', sector2]
-        ]);
-        
-        var options = { title: chartTitle };
-        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
+        let options = {
+            title: chartTitle,
+            width: 500,
+            height: 400,
+            hAxis: { title: "Categories" },
+            vAxis: { title: "Values" },
+            bars: "vertical",
+        };
+
+        let chart = new google.visualization.BarChart(document.getElementById("chart_div"));
+        chart.draw(google.visualization.arrayToDataTable(data), options);
     }
 }
