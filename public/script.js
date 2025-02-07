@@ -11,18 +11,34 @@ function generateInputs() {
     sectorInputs.innerHTML = "";
 
     for (let i = 1; i <= numSectors; i++) {
-        let label = document.createElement("label");
-        label.textContent = `Sector ${i}:`;
-        label.setAttribute("for", `sector${i}`);
+        // Create label for sector name
+        let nameLabel = document.createElement("label");
+        nameLabel.textContent = `Sector ${i} Name:`;
+        nameLabel.setAttribute("for", `sectorName${i}`);
 
-        let input = document.createElement("input");
-        input.type = "number";
-        input.id = `sector${i}`;
-        input.placeholder = `Enter value for Sector ${i}`;
-        input.min = "0";
+        // Create input for sector name
+        let nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.id = `sectorName${i}`;
+        nameInput.placeholder = `Enter name for Sector ${i}`;
 
-        sectorInputs.appendChild(label);
-        sectorInputs.appendChild(input);
+        // Create label for sector value
+        let valueLabel = document.createElement("label");
+        valueLabel.textContent = `Sector ${i} Value:`;
+        valueLabel.setAttribute("for", `sector${i}`);
+
+        // Create input for sector value
+        let valueInput = document.createElement("input");
+        valueInput.type = "number";
+        valueInput.id = `sector${i}`;
+        valueInput.placeholder = `Enter value for Sector ${i}`;
+        valueInput.min = "0";
+
+        // Append elements to the container
+        sectorInputs.appendChild(nameLabel);
+        sectorInputs.appendChild(nameInput);
+        sectorInputs.appendChild(valueLabel);
+        sectorInputs.appendChild(valueInput);
     }
 }
 
@@ -37,10 +53,11 @@ function drawChart() {
     let chartType = document.getElementById("chartType").value;
     let numSectors = document.getElementById("numSectors").value;
     
-    let data = [["Category", "Value"]];
+    let data = [["Sector", "Value"]];
     let totalValue = 0;
     
     for (let i = 1; i <= numSectors; i++) {
+        let sectorName = document.getElementById(`sectorName${i}`).value || `Sector ${i}`;
         let sectorValue = parseFloat(document.getElementById(`sector${i}`).value) || 0;
         
         if (sectorValue < 0) {
@@ -49,7 +66,7 @@ function drawChart() {
         }
         
         totalValue += sectorValue;
-        data.push([`Sector ${i}`, sectorValue]);
+        data.push([sectorName, sectorValue]);
     }
 
     if (chartType === "pie") {
@@ -61,7 +78,7 @@ function drawChart() {
         // Add remaining "Others" sector if total is less than 100
         if (totalValue < 100) {
             let remaining = 100 - totalValue;
-            data.push([`Others (${remaining}%)`, remaining]);
+            data.push(["Others", remaining]);
         }
 
         let options = {
