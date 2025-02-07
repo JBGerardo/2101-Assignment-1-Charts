@@ -20,13 +20,15 @@
                 <option value="pie">Pie Chart</option>
                 <option value="bar">Bar Chart</option>
             </select>
-            
-            <label for="sector1">Sector 1:</label>
-            <input type="number" id="sector1" placeholder="Enter value for Sector 1">
-            
-            <label for="sector2">Sector 2:</label>
-            <input type="number" id="sector2" placeholder="Enter value for Sector 2">
-            
+            <label for="numSectors">Select Number of Sectors:</label>
+            <select id="numSectors" onchange="generateInputs()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
+            <div id="sectorInputs"></div>     
             <button onclick="generateChart()">Generate Chart</button>
         </div>
         
