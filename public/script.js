@@ -56,15 +56,22 @@ function drawChart() {
     let data = [["Sector", "Value"]];
     let totalValue = 0;
     
+    // Only get gridline interval if bar chart is selected
+    let gridInterval = 50;
+    if (chartType === "bar") {
+        gridInterval = parseInt(document.getElementById("gridInterval").value) || 50;
+    }
+
     for (let i = 1; i <= numSectors; i++) {
         let sectorName = document.getElementById(`sectorName${i}`).value || `Sector ${i}`;
         let sectorValue = parseFloat(document.getElementById(`sector${i}`).value) || 0;
         
-        if (sectorValue < 0) {
-            alert("Values for sectors must be non-negative.");
-            return;
+        // ✅ Restrict bar chart values to max 400
+        if (chartType === "bar" && (sectorValue < 0 || sectorValue > 400)) {
+            alert("Bar values must be between 0 and 400.");
+            return; // Stop execution if invalid input is found
         }
-        
+
         totalValue += sectorValue;
         data.push([sectorName, sectorValue]);
     }
@@ -96,7 +103,10 @@ function drawChart() {
             width: 500,
             height: 400,
             hAxis: { title: "Categories" },
-            vAxis: { title: "Values" },
+            vAxis: {
+                title: "Values",
+                gridlines: { interval: gridInterval } // ✅ Only applies to bar charts
+            },
             bars: "vertical",
         };
 

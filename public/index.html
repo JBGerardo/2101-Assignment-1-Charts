@@ -16,10 +16,11 @@
             <input type="text" id="chartTitle" placeholder="Enter Chart Title">
             
             <label for="chartType">Select Chart Type:</label>
-            <select id="chartType">
+            <select id="chartType" onchange="toggleGridlineInput()">
                 <option value="pie">Pie Chart</option>
                 <option value="bar">Bar Chart</option>
             </select>
+
             <label for="numSectors">Select Number of Sectors:</label>
             <select id="numSectors" onchange="generateInputs()">
                 <option value="2">2</option>
@@ -28,6 +29,13 @@
                 <option value="5">5</option>
                 <option value="6">6</option>
             </select>
+
+            <!-- Gridline Interval (Only for Bar Chart) -->
+            <div id="gridlineContainer" style="display: none;">
+                <label for="gridInterval">Gridline Interval (10-100):</label>
+                <input type="number" id="gridInterval" min="10" max="100" step="10" value="50">
+            </div>
+
             <div id="sectorInputs"></div>     
             <button onclick="generateChart()">Generate Chart</button>
         </div>
@@ -37,6 +45,20 @@
             <!-- Chart will be rendered here -->
         </div>
     </div>
+
     <script src="script.js"></script>
+    <script>
+        // Function to show/hide the gridline input field based on chart type
+        function toggleGridlineInput() {
+            let chartType = document.getElementById("chartType").value;
+            let gridlineContainer = document.getElementById("gridlineContainer");
+
+            if (chartType === "bar") {
+                gridlineContainer.style.display = "block";
+            } else {
+                gridlineContainer.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
