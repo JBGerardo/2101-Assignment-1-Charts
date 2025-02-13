@@ -36,9 +36,14 @@
                 <input type="number" id="gridInterval" min="10" max="100" step="10" value="50">
             </div>
 
+            <div id="othersLabelDiv" style="display: none;">
+                <label for="othersLabelInput">Rename "Others" (Remainders):</label>
+                <input type="text" id="othersLabelInput" placeholder="Enter custom name for 'Others'">
+            </div>
+
             <div id="sectorInputs"></div>     
             <button onclick="generateChart()">Generate Chart</button>
-        </div>
+        </div>        
         
         <!-- Chart Section -->
         <div id="chart_div" class="chart-section">
